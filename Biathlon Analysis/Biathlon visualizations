@@ -1,0 +1,400 @@
+setwd("C:/")
+
+library(tidyverse)
+library(readxl)
+library(purrr)
+library(ggthemes)
+library(plotly)
+
+# Cross Country files
+fis_women <- read_excel('FIS_CoCo_Prize_Women_2526.xls')
+fis_men <- read_excel('FIS_CoCo_Prize_Men_2526.xls')
+
+# Biathlon analysis files
+overall_women <- read.csv('Overall_Women.csv', header = T)
+bib_women <- read.csv('Bib_Bonuses_Women.csv', header =T)
+
+overall_men <- read.csv('Overall_Men.csv', header = T)
+bib_men <- read.csv('Bib_Bonuses_Men.csv', header = T)
+
+
+# Points comparison data set
+fip_men <- overall_men |> 
+  arrange(desc(points)) |> 
+  filter(row_number() %in% c(1:173))
+
+fip_women <- overall_women |> 
+  arrange(desc(points))
+
+id <- 1:173
+
+points_data <- data.frame(id = id,
+                         women = fip_women$points,
+                         men = fip_men$points)
+
+points_data <- points_data |> 
+  filter(men > 0) |> 
+  pivot_longer(cols = c('women', 'men'),
+               names_to = "gender",
+               values_to = "points")
+
+# Prize money comparison data set
+fix_men <- overall_men |> 
+  arrange(desc(prize_dist)) |> 
+  filter(row_number() %in% c(1:173))
+
+fix_women <- overall_women |> 
+  arrange(desc(prize_dist))
+
+id <- 1:173
+
+prize_data <- data.frame(id = id,
+                         women = fix_women$prize_dist,
+                         men = fix_men$prize_dist)
+
+prize_data <- prize_data |> 
+  filter(women > 0) |> 
+  pivot_longer(cols = c('women', 'men'),
+               names_to = "gender",
+               values_to = "points")
+
+# Plotting exercise
+points <- overall_women |> 
+  arrange(desc(points))
+
+pointy <- overall_men |> 
+  arrange(desc(points))
+
+# Women's top 15
+points |> 
+  filter(row_number() %in% c(1:15)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(name, points)) +
+  geom_bar(aes(fill = points, width = 0.7), stat = 'identity') +
+  scale_fill_gradient(low = "#3962D1", high = "#0E056E") +
+  ggthemes::theme_clean() +
+  labs(title = "Points table women top 15. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Total Score")
+
+# Women's top 16-30
+points |> 
+  filter(row_number() %in% c(16:30)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(name, points)) +
+  geom_bar(aes(fill = points, width = 0.7), stat = 'identity') +
+  ylim(0, 600) +
+  scale_fill_gradient(low = "#0FB9F5", high = "#3962D1") +
+  ggthemes::theme_clean() +
+  labs(title = "Points table women 16-30. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Total Score")
+
+
+# Women's top 15 with average position as gradient and added line graph showing the amount of races per athlete
+points |> 
+  filter(row_number() %in% c(1:15)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(x = name)) +
+  geom_bar(aes(y = points, fill = avg_pos, width = 0.7), stat = 'identity') +
+  geom_point(aes(y = race_solo * 50), color = "#8A742A", size = 6) +
+  geom_line(aes(y = race_solo * 50), group = 1, stat = 'identity', colour = "#E0CF15", size = 1.5, alpha = 0.6) +
+  scale_fill_gradientn(colors = c("#0E056E", "#02C9FF"),
+                       limits = c(6, 36)) +
+  scale_y_continuous(sec.axis = sec_axis(~.*0.02, name = "Races competed")) +
+  ggthemes::theme_clean() +
+  labs(title = "Points table women top 15. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Average position")
+
+# Women's top 16-30 with average position as gradient and added line graph showing the amount of races per athlete
+points |> 
+  filter(row_number() %in% c(16:30)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(x = name)) +
+  geom_bar(aes(y = points, fill = avg_pos, width = 0.7), stat = 'identity') +
+  geom_point(aes(y = race_solo * 30), color = "#8A742A", size = 6) +
+  geom_line(aes(y = race_solo * 30), group = 1, stat = 'identity', colour = "#E0CF15", size = 1.5, alpha = 0.6) +
+  scale_fill_gradientn(colors = c("#0E056E", "#02C9FF"),
+                      limits = c(6, 36)) +
+  scale_y_continuous(limits = c(0, 600),
+                     sec.axis = sec_axis(~.*0.033333, name = "Races competed")) +
+  ggthemes::theme_clean() +
+  labs(title = "Points table women 16-30. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Average position")
+
+
+# Men's top 15
+pointy |> 
+  filter(row_number() %in% c(1:15)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(name, points)) +
+  geom_bar(aes(fill = points, width = 0.7), stat = 'identity') +
+  scale_fill_gradient(low = "#40C924", high = "#036E11") +
+  ggthemes::theme_clean() +
+  labs(title = "Points table men top 15. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Total Score")
+
+# Men's top 16-30
+pointy |> 
+  filter(row_number() %in% c(16:30)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(name, points)) +
+  geom_bar(aes(fill = points, width = 0.7), stat = 'identity') +
+  ylim(0, 600) +
+  scale_fill_gradient(low = "#72FF4C", high = "#40C924") +
+  ggthemes::theme_clean() +
+  labs(title = "Points table men 16-30. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Total Score")
+
+
+# Men's top 15 with average position as gradient and added line graph showing the amount of races per athlete
+pointy|> 
+  filter(row_number() %in% c(1:15)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(x = name)) +
+  geom_bar(aes(y = points, fill = avg_pos, width = 0.7), stat = 'identity') +
+  geom_line(aes(y = race_solo * 50), group = 1, stat = 'identity', colour = "#610A91", size = 1.5, alpha = 0.4) +
+  geom_point(aes(y = race_solo * 50), color = "#C432F7", size = 6, alpha = 0.7) +
+  scale_fill_gradientn(colors = c("#036E11", "#72FF4C"),
+                       limits = c(4, 36)) +
+  scale_y_continuous(sec.axis = sec_axis(~.*0.02, name = "Races competed")) +
+  ggthemes::theme_clean() +
+  labs(title = "Points table women top 15. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Average position")
+
+
+# Men's top 16-30 with average position as gradient and added line graph showing the amount of races per athlete
+pointy |> 
+  filter(row_number() %in% c(16:30)) |> 
+  mutate(name = fct_reorder(name, desc(points))) |> 
+  ggplot(aes(x = name)) +
+  geom_bar(aes(y = points, fill = avg_pos, width = 0.7), stat = 'identity') +
+  geom_line(aes(y = race_solo * 30), group = 1, stat = 'identity', colour = "#610A91", size = 1.5, alpha = 0.4) +
+  geom_point(aes(y = race_solo * 30), color = "#C432F7", size = 6, alpha = 0.7) +
+  scale_fill_gradientn(colors = c("#036E11", "#72FF4C"),
+                       limits = c(4, 34)) +
+  scale_y_continuous(limits = c(0, 650),
+                     sec.axis = sec_axis(~.*0.033333, name = "Races competed")) +
+  ggthemes::theme_clean() +
+  labs(title = "Points table women 16-30. Season 2025-2026",
+       x = "Athlete",
+       y = "Total Score",
+       fill = "Total Score")
+
+
+# Points distribution
+points_data |> 
+  filter(women > 0) |> 
+  ggplot(aes(x = id)) +
+  geom_line(aes(y = men), color = "#40C924", linewidth = 1) +
+  geom_line(aes(y = women), color = "#0E056E", linewidth = 1) +
+  ggthemes::theme_clean() +
+  geom_vline(xintercept = c(15, 30), linetype = "dotted", alpha = 0.35) +
+  labs(title = "Points distribution. Season 2025-2026",
+       x = "Ranking",
+       y = "Total Score")
+
+points_data |> 
+  ggplot(aes(x = id)) +
+  geom_line(aes(y = points, group = gender, color = gender), linewidth = 1) +
+  ggthemes::theme_clean() +
+  theme(legend.background = element_rect(fill = "#E5E7F0", colour = 1),
+        legend.position = c(0.7, 0.5)) +
+  geom_vline(xintercept = c(15, 30), linetype = "dotted", alpha = 0.35) +
+  scale_color_manual(values = c("#40C924", "#0E056E")) +
+  labs(title = "Points distribution. Season 2025-2026",
+       x = "Ranking",
+       y = "Total Score",
+       color = "Gender")
+
+# Prize money distribution
+prize_data |> 
+  ggplot(aes(x = id)) +
+  geom_line(aes(y = points, group = gender, color = gender), linewidth = 1) +
+  ggthemes::theme_clean() +
+  theme(legend.background = element_rect(fill = "#E5E7F0", colour = 1),
+        legend.position = c(0.7, 0.5)) +
+  geom_vline(xintercept = c(15, 30), linetype = "dotted", alpha = 0.35) +
+  scale_color_manual(values = c("#40C924", "#0E056E")) +
+  labs(title = "Prize money distribution. Season 2025-2026",
+       x = "Ranking",
+       y = "Prize money distribution %",
+       color = "Gender")
+
+
+# Points gathering time series
+wpoings <- bib_women |> 
+  select("name", matches("total"))
+
+wtotal <- overall_women |> 
+  select("name", "points") |> 
+  rename(total21 = points)
+
+mpoings <- bib_men |> 
+  select("name", matches("total"))
+
+mtotal <- overall_men |> 
+  select("name", "points") |> 
+  rename(total21 = points)
+
+timew <- merge(wpoings, wtotal, by = "name")
+timem <- merge(mpoings, mtotal, by = "name")
+
+timew <- timew |> 
+  filter(total21 > 599) |> 
+  rename(Ftrim1 = total1,
+         Ftrim2 = total2,
+         Ftrim3 = total3,
+         Ftrim4 = total4,
+         Ftrim5 = total5,
+         Ftrim6 = total6,
+         Ftrim7 = total7,
+         Ftrim8 = total8,
+         Strim1 = total9,
+         Strim2 = total10,
+         Strim3 = total11,
+         Strim4 = total12,
+         Strim5 = total13,
+         Strim6 = total14,
+         Ttrim1 = total15,
+         Ttrim2 = total16,
+         Ttrim3 = total17,
+         Ttrim4 = total18,
+         Ttrim5 = total19,
+         Ttrim6 = total20,
+         Ttrim7 = total21) |> 
+  pivot_longer(cols = matches("trim"),
+               names_to = "race",
+               values_to = "points")
+
+timew |> 
+  ggplot(aes(race, points, group = name, color = name)) +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  ggthemes::theme_clean() +
+  theme(legend.background = element_rect(fill = "#E5E7F0", colour = 1),
+        legend.position = c(0.925, 0.2)) +
+  geom_vline(xintercept = c("Ftrim8", "Strim6"), linetype = "dotted", alpha = 0.35) +
+  scale_color_discrete(palette = c("#9B070E", "#042695", "#B409A8", "#F075E7", "#049516", "#F63C45",
+                                   "#3866FA", "#F5993D", "#51B9FA", "#06EF24")) +
+  labs(title = "Evolution of points table for women top 10 athletes. Season 2025-2026",
+       x = "Competition table",
+       y = "Points",
+       color = "Name")
+
+timem <- timem |> 
+  filter(total21 > 690) |> 
+  rename(Ftrim1 = total1,
+         Ftrim2 = total2,
+         Ftrim3 = total3,
+         Ftrim4 = total4,
+         Ftrim5 = total5,
+         Ftrim6 = total6,
+         Ftrim7 = total7,
+         Ftrim8 = total8,
+         Strim1 = total9,
+         Strim2 = total10,
+         Strim3 = total11,
+         Strim4 = total12,
+         Strim5 = total13,
+         Strim6 = total14,
+         Ttrim1 = total15,
+         Ttrim2 = total16,
+         Ttrim3 = total17,
+         Ttrim4 = total18,
+         Ttrim5 = total19,
+         Ttrim6 = total20,
+         Ttrim7 = total21) |> 
+  pivot_longer(cols = matches("trim"),
+               names_to = "race",
+               values_to = "points")
+
+timem |> 
+  ggplot(aes(race, points, group = name, color = name)) +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  ggthemes::theme_clean() +
+  theme(legend.background = element_rect(fill = "#E5E7F0", colour = 1),
+        legend.position = c(0.925, 0.2)) +
+  geom_vline(xintercept = c("Ftrim8", "Strim6"), linetype = "dotted", alpha = 0.35) +
+  scale_color_discrete(palette = c("#F075E7", "#F5993D", "#B409A8", "#9B070E", "#049516", "#F63C45",
+                                   "#3866FA", "#042695", "#06EF24", "#51B9FA")) +
+  labs(title = "Evolution of points table for men top 10 athletes. Season 2025-2026",
+       x = "Competition table",
+       y = "Points",
+       color = "Name")
+
+# FIS vs IBU Prize distribution comparison
+fis_women <- fis_women |> 
+  mutate(prize_dist = (prize_total / sum(prize_total)*100)) |> 
+  mutate_at(3, round, 3)
+
+fis_men <- fis_men |> 
+  mutate(prize_dist = (prize_total / sum(prize_total)*100)) |> 
+  mutate_at(3, round, 3)
+
+ibu_women <- overall_women |> 
+  arrange(desc(prize_dist)) |> 
+  filter(row_number() %in% c(1:120))
+
+ibu_men <- overall_men |> 
+  arrange(desc(prize_dist)) |> 
+  filter(row_number() %in% c(1:120))
+
+
+id <- 1:120
+
+compare <- data.frame(id = id,
+                      fis_women = fis_women$prize_dist,
+                      fis_men = fis_men$prize_dist,
+                      ibu_women = ibu_women$prize_dist,
+                      ibu_men = ibu_men$prize_dist)
+
+compare2 <- compare |> 
+  filter(row_number() %in% c(1:30)) |> 
+  pivot_longer(cols = c('fis_women', 'fis_men', 'ibu_women', 'ibu_men'),
+               names_to = "competition",
+               values_to = "prize_dist")
+
+compare2 |> 
+  ggplot(aes(x = id)) +
+  geom_line(aes(y = prize_dist, group = competition, color = competition), linewidth = 1) +
+  ggthemes::theme_clean() +
+  theme(legend.background = element_rect(fill = "#E5E7F0", colour = 1),
+        legend.position = c(0.7, 0.5)) +
+  geom_vline(xintercept = c(15, 30), linetype = "dotted", alpha = 0.35) +
+  scale_color_manual(values = c("#EB250F", "#E3A21A", "#40C924", "#0E056E")) +
+  labs(title = "FIS vs IBU Prize money distribution comparison. Season 2025-2026",
+       x = "Ranking",
+       y = "Prize money distribution %",
+       color = "Competition")
+
+compare3 <- compare |> 
+  filter(row_number() %in% c(31:120)) |> 
+  pivot_longer(cols = c('fis_women', 'fis_men', 'ibu_women', 'ibu_men'),
+               names_to = "competition",
+               values_to = "prize_dist")
+
+compare3 |> 
+  ggplot(aes(x = id)) +
+  geom_line(aes(y = prize_dist, group = competition, color = competition), linewidth = 1) +
+  ggthemes::theme_clean() +
+  theme(legend.background = element_rect(fill = "#E5E7F0", colour = 1),
+        legend.position = c(0.7, 0.5)) +
+  ylim(0, 1.5) +
+  geom_vline(xintercept = c(30, 50), linetype = "dotted", alpha = 0.35) +
+  scale_color_manual(values = c("#EB250F", "#E3A21A", "#40C924", "#0E056E")) +
+  labs(title = "FIS vs IBU Prize money distribution comparison. Season 2025-2026",
+       x = "Ranking",
+       y = "Prize money distribution %",
+       color = "Competition")
