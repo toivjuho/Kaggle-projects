@@ -11,11 +11,47 @@ fis_women <- read_excel('FIS_CoCo_Prize_Women_2526.xls')
 fis_men <- read_excel('FIS_CoCo_Prize_Men_2526.xls')
 
 # Biathlon analysis files
+prize_women <- read.csv('Full_Prize_Money_Women.csv', header = T)
 overall_women <- read.csv('Overall_Women.csv', header = T)
 bib_women <- read.csv('Bib_Bonuses_Women.csv', header =T)
 
+prize_men <- read.csv('Full_Prize_Money_Men.csv', header = T)
 overall_men <- read.csv('Overall_Men.csv', header = T)
 bib_men <- read.csv('Bib_Bonuses_Men.csv', header = T)
+
+pos_w <- read.csv('Position_Table_Solo_Women.csv', header = T)
+pos_m <- read.csv('Position_Table_Solo_Men.csv', header = T)
+
+# For points distribution visualization
+ibucur <- c(90, 75, 65, 55, 50, 45, 41, 37, 34, 31,
+            30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 
+            20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+            10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+ibuoh <- c(90, 75, 60, 50, 45, 40, 36, 34, 32, 31, 
+           30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 
+           20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+           10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+ibuold <- c(60, 54, 48, 43, 40, 38, 36, 34, 32, 31, 
+            30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 
+            20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+            10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+fisold <- c(100, 80, 60, 50, 45, 40, 36, 32, 29, 26, 
+            24, 22, 20, 18, 16, 15, 14, 13, 12, 11,
+            10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+fisnew <- c(100, 95, 90, 85, 80, 75, 72, 69, 66, 63, 
+            60, 58, 56, 54, 52, 50, 48, 46, 44, 42,
+            40, 38, 36, 34, 32, 30, 28, 26, 24, 22,
+            20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+            10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
 
 # Points comparison data set
