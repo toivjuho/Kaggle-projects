@@ -38,6 +38,74 @@ mixrelay2 <- c(1, 4, 5, 6, 9, 10, 11, 14, 15, 16, 19, 20, 21, 24, 25, 26, 29, 30
                91, 94, 95, 96, 99, 100, 101, 104, 105, 106, 109, 110, 111, 114, 115, 
                116, 119, 120, 121, 124, 125, 126, 129, 130, 131, 134, 135, 136, 139, 140)
 
+# Points distributional vectors
+ibucurr <- c(90, 75, 65, 55, 50, 45, 41, 37, 34, 31,
+             30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 
+             20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+             10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+ibumass <- c(90, 75, 65, 55, 50, 45, 41, 37, 34, 31,
+             30, 29, 28, 27, 26, 25, 24, 23, 22, 21,
+             20, 18, 16, 14, 12, 10, 8, 6, 4, 2)
+
+ibuohpoints <- c(90, 75, 60, 50, 45, 40, 36, 34, 32, 31,
+                 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 
+                 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+                 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+ibuohmass <- c(90, 75, 60, 50, 45, 40, 36, 34, 32, 31,
+               30, 29, 28, 27, 26, 25, 24, 23, 22, 21,
+               20, 18, 16, 14, 12, 10, 8, 6, 4, 2)
+
+ibuoldpoints <- c(60, 54, 48, 43, 40, 38, 36, 34, 32, 31,
+                  30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 
+                  20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+                  10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+ibuoldmass <- c(60, 54, 48, 43, 40, 38, 36, 34, 32, 31,
+                30, 29, 28, 27, 26, 25, 24, 23, 22, 21,
+                20, 18, 16, 14, 12, 10, 8, 6, 4, 2)
+
+fisoldp <- c(100, 80, 60, 50, 45, 40, 36, 32, 29, 26, 
+             24, 22, 20, 18, 16, 15, 14, 13, 12, 11,
+             10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+fisnewmass <- c(100, 95, 90, 85, 80, 75, 72, 69, 66, 63, 
+                60, 58, 56, 54, 52, 50, 48, 46, 44, 42,
+                40, 36, 32, 28, 24, 20, 16, 12, 8, 4)
+
+fisnew <- c(100, 95, 90, 85, 80, 75, 72, 69, 66, 63, 
+            60, 58, 56, 54, 52, 50, 48, 46, 44, 42,
+            40, 38, 36, 34, 32, 30, 28, 26, 24, 22,
+            20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 
+            10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+# Prize money vectors
+relay_prize <- c(7500, 5500, 4500, 3250, 2250, 1750, 1150, 600)
+
+individual_prize <- c(20000, 16000, 13000, 10500, 9500, 8000, 6500, 5750, 5000, 4500,
+                      3750, 3500, 3250, 2750, 2500, 2200, 2000, 1800, 1600, 1400, 
+                      1250, 1100, 1000, 900, 800, 700, 600, 500, 350, 250)
+
+# Functions
+top50 <- function(x){x = ifelse(x > 50, 0 ,x)}
+top40 <- function(x){x = ifelse(x > 40, 0 ,x)}
+top30 <- function(x){x = ifelse(x > 30, 0 ,x)}
+top8 <- function(x){x = ifelse(x > 8, 0 ,x)}
+dns <- function(x){x = ifelse(is.na(x), 120, x)}
+races <- function(x){x = ifelse(x < 120, 1, 0)}
+points <- function(x){x = recode(x, !!!setNames(ibucurr, 1:40))}
+mass <- function(x){x = recode(x, !!!setNames(ibumass, 1:30))}
+ohpoints <- function(x){x = recode(x, !!!setNames(ibuohpoints, 1:40))}
+ohmass <- function(x){x = recode(x, !!! setNames(ibuohmass, 1:30))}
+oldpoints <- function(x){x = recode(x, !!!setNames(ibuoldpoints, 1:40))}
+oldmass <- function(x){x = recode(x, !!!setNames(ibuoldmass, 1:30))}
+fispoints <- function(x){x = recode(x, !!!setNames(fisoldp, 1:30))}
+fisnewpoints <- function(x){x = recode(x, !!!setNames(fisnew, 1:50))}
+fisnewmasse <- function(x){x = recode(x, !!!setNames(fisnewmass, 1:30))}
+prize_rel <- function(x){x = recode(x, !!!setNames(relay_prize, 1:8))}
+prize_ind <- function(x){x = recode(x, !!!setNames(individual_prize, 1:30))}
+
 ### Östersund Women ###
 
 # Östersund Women Relay
@@ -51,9 +119,7 @@ ostrres <- na.locf(ostrres)
 ostrmod <- ostrres |> 
   filter(!row_number() %in% relays) |> 
   select(1, 3, 4) |> 
-  rename(ost_rel = 1,
-         name = 2,
-         country = 3) |> 
+  rename(ost_rel = 1) |> 
   mutate(ost_rel = as.numeric(ost_rel))
 
 # Östersund Women Sprint
@@ -65,9 +131,7 @@ ostsres <- as.data.frame(t(ostsres))
 ostsmod <- ostsres |> 
   filter(!row_number() %in% c(102, 103, 104, 105, 106)) |> 
   select(1, 3, 4) |> 
-  rename(ost_spr = 1,
-         name = 2,
-         country = 3) |> 
+  rename(ost_spr = 1) |> 
   mutate(ost_spr = as.numeric(ost_spr))
 
 # Merging races (in complete set includes all the pre-processed races)
@@ -77,67 +141,92 @@ l <- list(ostsmod)
 # All IBU World Cup races
 k <- list(ostrmod, ostsmod)
 
-position_women <- reduce(.x = l, merge, by = c('name', 'country'), all = T)
-all_races_women <- reduce(.x = k, merge, by = c('name', 'country'), all = T)
+position_women <- reduce(.x = l, merge, by = c('3', '4'), all = T)
+all_races_women <- reduce(.x = k, merge, by = c('3', '4'), all = T)
 
-# Taking care of NA values
+#Renaming the last bits
 position_women <- position_women |> 
-  mutate(avg_pos = rowMeans(position_women[3], na.rm = T),
-         sd = apply(position_women[3], 1, sd, na.rm = T),
-         .before = ost_spr) |>
-  mutate(
-         ost_spr = ifelse(is.na(ost_spr), 120, ost_spr)) |> 
-  mutate_at(3:4, round, 1)
+  rename(name = 1,
+         country = 2)
 
 all_races_women <- all_races_women |> 
-  mutate(ost_rel = ifelse(is.na(ost_rel), 120, ost_rel),
-         ost_spr = ifelse(is.na(ost_spr), 120, ost_spr))
+  rename(name = 1,
+         country = 2)
+
+# Creating positions table for individual races
+position_women <- position_women[-24:-26]
+
+position_women <- position_women |> 
+  mutate(avg_pos = rowMeans(position_women[3:23], na.rm = T),
+         sd = apply(position_women[3:23], 1, sd, na.rm = T),
+         .before = ost_ind) |>
+  mutate_at(5:25, dns) |> 
+  mutate_at(3:4, round, 1)
+
+# Creating positions table for all races
+all_races_women <- all_races_women |> 
+  mutate_at(3:34, dns)
 
 # Creating a points table
 points_women <- position_women |> 
-  mutate(ost_spr= ifelse(ost_spr > 40, 0, ost_spr)) |> 
-  mutate(ost_spr = case_match(ost_spr,
-                              1 ~ 90, 2 ~ 75, 3 ~ 65, 4 ~ 55, 5 ~ 50, 6 ~ 45, 7 ~ 41, 8 ~ 37,
-                              9 ~ 34, 10 ~ 31, 11 ~ 30, 12 ~ 29, 13 ~ 28, 14 ~ 27, 15 ~ 26, 16 ~ 25,
-                              17 ~ 24, 18 ~ 23, 19 ~ 22, 20 ~ 21, 21 ~ 20, 22 ~ 19, 23 ~ 18, 24 ~ 17,
-                              25 ~ 16, 26 ~ 15, 27 ~ 14, 28 ~ 13, 29 ~ 12, 30 ~ 11, 31 ~ 10, 32 ~ 9,
-                              33 ~ 8, 34 ~ 7, 35 ~ 6, 36 ~ 5, 37 ~ 4, 38 ~ 3, 39 ~ 2, 40 ~ 1,
-                              .default = ost_spr)
-  ) |> 
-  mutate(total = ost_spr) |> 
+  mutate_at(5:25, top40) |> 
+  mutate_at(c(5:11, 13:17, 19, 21:24), points) |> 
+  mutate_at(c(12, 18, 20, 25), mass) |> 
+  mutate(total = rowSums(across(5:25)),
+         .before = avg_pos) |> 
   mutate(points_per_pos = total / avg_pos,
-         .before = ost_spr)
+         .before = ost_ind) |> 
+  mutate_at(6, round, 1)
 
 # Creating prize money table
 prize_women <- all_races_women |> 
-  mutate(ost_rel = ifelse(ost_rel > 8, 0, ost_rel),
-         ost_spr= ifelse(ost_spr > 30, 0, ost_spr)
-         ) |> 
-  mutate(ost_rel = case_match(ost_rel, 
-                              1 ~ 7500, 2 ~ 5500, 3 ~ 4500, 4 ~ 3250, 5 ~ 2250, 6 ~ 1750, 7 ~ 1150, 8 ~ 600,
-                              .default = ost_rel),
-         ost_spr = case_match(ost_spr,
-                              1 ~ 20000, 2 ~ 16000, 3 ~ 13000, 4 ~ 10500, 5 ~ 9500, 6 ~ 8000, 7 ~ 6500, 8 ~ 5750,
-                              9 ~ 5000, 10 ~ 4500, 11 ~ 3750, 12 ~ 3500, 13 ~ 3250, 14 ~ 2750, 15 ~ 2500, 16 ~ 2200,
-                              17 ~ 2000, 18 ~ 1800, 19 ~ 1600, 20 ~ 1400, 21 ~ 1250, 22 ~ 1100, 23 ~ 1000, 24 ~ 900,
-                              25 ~ 800, 26 ~ 700, 27 ~ 600, 28 ~ 500, 29 ~ 350, 30 ~ 250,
-                              .default = ost_spr)
-  ) |> 
-  mutate(total = ost_rel + ost_spr,
+  mutate_at(c(3:5, 10, 16, 18, 23:24, 27, 30:31), top8) |> 
+  mutate_at(c(6:9, 11:15, 17, 19:22, 25:26, 28:29, 32:34), top30) |> 
+  mutate_at(c(3:5, 10, 16, 18, 23:24, 27, 30:31), prize_rel) |> 
+  mutate_at(c(6:9, 11:15, 17, 19:22, 25:26, 28:29, 32:34), prize_ind) |> 
+  mutate(total = rowSums(across(3:34)),
          .before = ost_rel) |> 
-  mutate(total_solo = ost_spr)
+  mutate(total_solo = ost_ind + ost_spr + ost_purs + 
+           hoch_spr + hoch_purs + 
+           anne_spr + anne_purs + anne_mass +
+           ober_spr + ober_purs +
+           ruhp_spr + ruhp_purs +
+           nove_indi + nove_mass +
+           kont_indi + kont_mass +
+           ote_spr + ote_purs +
+           hol_spr + hol_purs + hol_mass,
+         .before = ost_rel)
 
 # Adding total races
 races_women <- all_races_women |> 
-  mutate(ost_rel = ifelse(ost_rel < 120, 1, 0),
-         ost_spr= ifelse(ost_spr < 120, 1, 0)
-         ) |> 
-  mutate(total = ost_rel + ost_spr,
+  mutate_at(3:34, races) |> 
+  mutate(total = rowSums(across(3:34)),
          .before = ost_rel) |> 
-  mutate(total_solo = ost_spr,
+  mutate(total_solo = ost_ind + ost_spr + ost_purs + 
+           hoch_spr + hoch_purs + 
+           anne_spr + anne_purs + anne_mass +
+           ober_spr + ober_purs +
+           ruhp_spr + ruhp_purs +
+           nove_indi + nove_mass +
+           kont_indi + kont_mass +
+           ote_spr + ote_purs +
+           hol_spr + hol_purs + hol_mass,
          .before = ost_rel)
 
-# Combining all the information into a new data set
+# Combining all the information into a new data set (bonus prize money was added by hand based on gathered information)
+comb_women <- data.frame(name = position_women$name,
+                         country = position_women$country,
+                         race_total = races_women$total,
+                         race_solo = races_women$total_solo,
+                         avg_pos = points_women$avg_pos,
+                         sd = points_women$sd,
+                         points = points_women$total,
+                         points_per_pos = points_women$points_per_pos,
+                         prize_money_total = prize_women$total,
+                         prize_money_solo = prize_women$total_solo,
+                         prize_money_bonus = 0)
+
+# More official data set created
 official_women <- data.frame(name = position_women$name,
                              country = position_women$country,
                              points = points_women$total,
@@ -146,9 +235,33 @@ official_women <- data.frame(name = position_women$name,
                              race_solo = races_women$total_solo,
                              sd = points_women$sd,
                              points_per_pos = points_women$points_per_pos,
-                             prize_dist = comb_women$prize_money_total / sum(comb_women$prize_money_total))
+                             prize_dist = comb_women$prize_money_total / sum(comb_women$prize_money_total),
+                             prize_dist_solo = comb_women$prize_money_solo / sum(comb_women$prize_money_solo))
 
 official_women <- official_women |> 
-  mutate(prize_dist = prize_dist * 100) |> 
+  mutate(prize_dist = prize_dist * 100,
+         prize_dist_solo = prize_dist_solo * 100) |> 
   mutate_at(8, round, 1) |> 
-  mutate_at(9, round, 3)
+  mutate_at(9:10, round, 3)
+
+# Creating points table with overhaul distribution (same template was used for creating all the distribution tables)
+points_w2425 <- position_women |> 
+  mutate_at(5:25, top40) |> 
+  mutate_at(c(5:11, 13:17, 19, 21:24), ohpoints) |> 
+  mutate_at(c(12, 18, 20, 25), ohmass) |> 
+  mutate(total = rowSums(across(5:25)),
+         .before = avg_pos) |> 
+  mutate(points_per_pos = total / avg_pos,
+         .before = ost_ind) |> 
+  mutate_at(6, round, 1)
+
+# Combining all the results with different point distributions to a one data set
+pd_comp <- data.frame(name = position_women$name,
+                      country = position_women$country,
+                      avg_pos = position_women$avg_pos,
+                      sd = position_women$sd,
+                      ibunew = points_women$total,
+                      ibuoh = points_w2425$total,
+                      ibuold = points_wold$total,
+                      fisnew = points_wfisnew$total,
+                      fisold = points_wfisold$total)
