@@ -88,6 +88,26 @@ individual_prize <- c(20000, 16000, 13000, 10500, 9500, 8000, 6500, 5750, 5000, 
                       1250, 1100, 1000, 900, 800, 700, 600, 500, 350, 250)
 
 # Functions
+relayjson <- function(df) {
+  df <- data.frame(children = df$children$children) |> 
+    select(matches("children.name"))
+  
+  df <- as.data.frame(t(df))
+  
+  df <- na.locf(df)
+}
+
+racejson <- function(df) {
+  df <- data.frame(children = df$children$children) |> 
+    select(matches("children.name"))
+  
+  df <- as.data.frame(t(df))
+  
+  df <- df |> 
+    drop_na(5) |> 
+    select(1, 3, 4)
+}
+
 top50 <- function(x){x = ifelse(x > 50, 0 ,x)}
 top40 <- function(x){x = ifelse(x > 40, 0 ,x)}
 top30 <- function(x){x = ifelse(x > 30, 0 ,x)}
@@ -108,29 +128,23 @@ prize_ind <- function(x){x = recode(x, !!!setNames(individual_prize, 1:30))}
 
 ### Östersund Women ###
 
+### Creating data sets from json files
+relaylist <- list(ostrres = oster_relay)
+
+racelist <- list(ostsres = oster_spr)
+
+relaytreat <- lapply(relaylist, relayjson)
+racetreat <- lapply(racelist, racejson)
+
 # Östersund Women Relay
-ostrres <- data.frame(children = oster_relay$children$children) |> 
-  select(matches("children.name"))
-
-ostrres <- as.data.frame(t(ostrres))
-
-ostrres <- na.locf(ostrres)
-
-ostrmod <- ostrres |> 
+ostrmod <- relaytreat$ostrres |> 
   filter(!row_number() %in% relays) |> 
   select(1, 3, 4) |> 
   rename(ost_rel = 1) |> 
   mutate(ost_rel = as.numeric(ost_rel))
 
 # Östersund Women Sprint
-ostsres <- data.frame(children = oster_spr$children$children) |> 
-  select(matches("children.name"))
-
-ostsres <- as.data.frame(t(ostsres))
-
-ostsmod <- ostsres |> 
-  filter(!row_number() %in% c(102, 103, 104, 105, 106)) |> 
-  select(1, 3, 4) |> 
+ostsmod <- racetreat$ostsres |> 
   rename(ost_spr = 1) |> 
   mutate(ost_spr = as.numeric(ost_spr))
 
